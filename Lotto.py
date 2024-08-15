@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import openpyxl as xl
+
 
 # Page config
 st.set_page_config(page_title="Lottery Data Explorer", layout="wide")
@@ -26,10 +28,3 @@ st.dataframe(df.head())
 # Basic statistics
 st.subheader("Basic Statistics")
 st.write(df.describe())
-
-# Add more interactive elements here, such as:
-# - Filters for specific date ranges
-# - Charts showing number frequency
-# - Prediction features if required
-
-# You can expand on this basic structure based on specific requirements
