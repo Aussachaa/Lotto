@@ -28,6 +28,33 @@ if df is not None:  # ตรวจสอบว่าข้อมูลโหล�
     st.subheader("Basic Statistics")
     st.write(df.describe())  # แสดงสถิติพื้นฐานของข้อมูลตัวเลข
 
-    # เพิ่มเติมส่วนอื่นๆ ตามที่คุณต้องการ เช่น การตรวจผลสลาก การแสดงสถิติเฉพาะ หรือการทำนายผล
+    # ส่วนของ Filter
+    st.subheader("Filter and Frequency Table")
+
+    # สร้าง list ของ Type ที่มีอยู่ใน DataFrame
+    types = df.columns.tolist()[1:]  # ไม่รวมคอลัมน์ 'งวดที่' และ 'Date'
+
+    # สร้างตัวเลือก filter สำหรับ Type
+    selected_type = st.selectbox("Select Type:", types)
+
+    # สร้างตัวเลือก filter สำหรับ Date
+    min_date = df['Date'].min()
+    max_date = df['Date'].max()
+    selected_date_range = st.date_input("Select Date Range:", 
+                                        value=(min_date, max_date), 
+                                        min_value=min_date, 
+                                        max_value=max_date)
+
+    # กรองข้อมูลตาม Type และ Date ที่เลือก
+    filtered_df = df[(df['Date'] >= pd.to_datetime(selected_date_range[0])) & 
+                     (df['Date'] <= pd.to_datetime(selected_date_range[1]))]
+
+    # นับความถี่ของตัวเลขในคอลัมน์ที่เลือก
+    frequency_table = filtered_df[selected_type].value_counts().reset_index()
+    frequency_table.columns = ['Number', 'Frequency']
+
+    # แสดงตารางความถี่
+    st.dataframe(frequency_table)
+
 else:
     st.warning("No data available. Please check the data source or try again later.")
