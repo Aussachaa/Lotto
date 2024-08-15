@@ -20,6 +20,9 @@ def load_data():
 df = load_data()
 
 if df is not None:  # Check if data loading was successful
+    # Reorder columns to put 'Date' first
+    df = df[['Date'] + [col for col in df.columns if col != 'Date']]
+
     # Display data overview
     st.subheader("Data Overview")
     st.dataframe(df.head())  # Display the first 5 rows of data
@@ -49,7 +52,7 @@ if df is not None:  # Check if data loading was successful
     frequency_table.columns = ['Number', 'Frequency']
 
     # Display the frequency table
-    st.dataframe(frequency_table,  use_container_width=True)
+    st.dataframe(frequency_table, use_container_width=True)
 
 else:
     st.warning("No data available. Please check the data source or try again later.")
