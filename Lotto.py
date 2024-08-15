@@ -33,11 +33,12 @@ if df is not None:  # Check if data loading was successful
     # Create filter options for Type (allow multiple selections)
     selected_types = st.multiselect("Select Types:", types, default=types[0])
 
-    # Create filter options for Start Date and End Date
-    min_date = df['Date'].min()
-    max_date = df['Date'].max()
-    start_date = st.date_input("Start Date:", min_value=min_date, max_value=max_date, value=min_date)
-    end_date = st.date_input("End Date:", min_value=min_date, max_value=max_date, value=max_date)
+    # Create filter options for Start Date and End Date (in the same row)
+    col1, col2 = st.columns(2)  # Create two columns
+    with col1:
+        start_date = st.date_input("Start Date:", min_value=df['Date'].min(), max_value=df['Date'].max(), value=df['Date'].min())
+    with col2:
+        end_date = st.date_input("End Date:", min_value=df['Date'].min(), max_value=df['Date'].max(), value=df['Date'].max())
 
     # Filter data based on selected Types and Date range
     filtered_df = df[(df['Date'] >= pd.to_datetime(start_date)) & 
@@ -48,7 +49,7 @@ if df is not None:  # Check if data loading was successful
     frequency_table.columns = ['Number', 'Frequency']
 
     # Display the frequency table
-    st.dataframe(frequency_table)
+    st.dataframe(frequency_table,  use_container_width=True)
 
 else:
     st.warning("No data available. Please check the data source or try again later.")
