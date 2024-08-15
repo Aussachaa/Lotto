@@ -8,7 +8,7 @@ st.set_page_config(page_title="Lottery Data Explorer", layout="wide")
 st.title("Lottery Data Explorer")
 
 # Load data
-@st.cache_data  # ใช้ cache เพื่อเพิ่มประสิทธิภาพในการโหลดข้อมูลซ้ำ
+@st.cache_data  # Use cache to improve performance when reloading data
 def load_data():
     path_excel = "https://raw.githubusercontent.com/Aussachaa/Lotto/main/DB_Lottery.xlsx"
     try:
@@ -19,41 +19,35 @@ def load_data():
 
 df = load_data()
 
-if df is not None:  # ตรวจสอบว่าข้อมูลโหลดสำเร็จหรือไม่
+if df is not None:  # Check if data loading was successful
     # Display data overview
     st.subheader("Data Overview")
-    st.dataframe(df.head())  # แสดง 5 แถวแรกของข้อมูล
+    st.dataframe(df.head())  # Display the first 5 rows of data
 
-    # Basic statistics
-    st.subheader("Basic Statistics")
-    st.write(df.describe())  # แสดงสถิติพื้นฐานของข้อมูลตัวเลข
+    # Filter and Frequency Table section
+    st.subheader("Lucky Number Frequency")
 
-    # ส่วนของ Filter
-    st.subheader("Filter and Frequency Table")
+    # Create a list of Types available in the DataFrame
+    types = df.columns.tolist()[1:]  # Exclude 'งวดที่' and 'Date' columns
 
-    # สร้าง list ของ Type ที่มีอยู่ใน DataFrame
-    types = df.columns.tolist()[1:]  # ไม่รวมคอลัมน์ 'งวดที่' และ 'Date'
+    # Create filter options for Type (allow multiple selections)
+    selected_types = st.multiselect("Select Types:", types, default=types[0])
 
-    # สร้างตัวเลือก filter สำหรับ Type
-    selected_type = st.selectbox("Select Type:", types)
-
-    # สร้างตัวเลือก filter สำหรับ Date
+    # Create filter options for Start Date and End Date
     min_date = df['Date'].min()
     max_date = df['Date'].max()
-    selected_date_range = st.date_input("Select Date Range:", 
-                                        value=(min_date, max_date), 
-                                        min_value=min_date, 
-                                        max_value=max_date)
+    start_date = st.date_input("Start Date:", min_value=min_date, max_value=max_date, value=min_date)
+    end_date = st.date_input("End Date:", min_value=min_date, max_value=max_date, value=max_date)
 
-    # กรองข้อมูลตาม Type และ Date ที่เลือก
-    filtered_df = df[(df['Date'] >= pd.to_datetime(selected_date_range[0])) & 
-                     (df['Date'] <= pd.to_datetime(selected_date_range[1]))]
+    # Filter data based on selected Types and Date range
+    filtered_df = df[(df['Date'] >= pd.to_datetime(start_date)) & 
+                     (df['Date'] <= pd.to_datetime(end_date))]
 
-    # นับความถี่ของตัวเลขในคอลัมน์ที่เลือก
-    frequency_table = filtered_df[selected_type].value_counts().reset_index()
+    # Combine and count the frequency of numbers in the selected columns
+    frequency_table = pd.concat([filtered_df[col] for col in selected_types]).value_counts().reset_index()
     frequency_table.columns = ['Number', 'Frequency']
 
-    # แสดงตารางความถี่
+    # Display the frequency table
     st.dataframe(frequency_table)
 
 else:
