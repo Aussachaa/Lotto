@@ -11,7 +11,11 @@ st.title("Lottery Data Explorer")
 @st.cache_data
 def load_data():
     path_excel = "https://raw.githubusercontent.com/Aussachaa/Lotto/main/DB_Lottery.xlsx"
-    return pd.read_excel(path_excel, sheet_name="DB", usecols="A:I")
+    try:
+        return pd.read_excel(path_excel, sheet_name="DB", usecols="A:I")
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+        return None
 
 df = load_data()
 
