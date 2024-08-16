@@ -1,6 +1,26 @@
 import streamlit as st
 import pandas as pd
 
+# กำหนดรหัสผ่านที่ถูกต้อง (ควรเก็บไว้ในที่ปลอดภัยกว่านี้ในแอปพลิเคชันจริง)
+CORRECT_PASSWORD = "your_password"
+
+# สร้าง Session State เพื่อเก็บสถานะการล็อกอิน
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
+def check_password():
+    """ตรวจสอบรหัสผ่านที่ผู้ใช้ป้อน"""
+    if st.session_state.password == 12345:
+        st.session_state.logged_in = True
+        st.experimental_rerun()  # รีเฟรชหน้าเว็บเพื่อแสดงเนื้อหาหลังล็อกอิน
+    else:
+        st.error("รหัสผ่านไม่ถูกต้อง")
+
+# ส่วนของการล็อกอิน
+if not st.session_state.logged_in:
+    st.text_input("Password", type="password", key="password", on_change=check_password)
+    st.stop()  # หยุดการแสดงผลส่วนอื่นๆ จนกว่าจะล็อกอินสำเร็จ
+
 st.set_page_config(page_title="Lottery Data Explorer", layout="wide")
 st.title("🔮 Lottery Data Explorer 🎱") 
 
