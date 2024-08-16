@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # กำหนดรหัสผ่านที่ถูกต้อง (ควรเก็บไว้ในที่ปลอดภัยกว่านี้ในแอปพลิเคชันจริง)
-CORRECT_PASSWORD = "your_password"
+CORRECT_PASSWORD = "12345"
 
 # สร้าง Session State เพื่อเก็บสถานะการล็อกอิน
 if 'logged_in' not in st.session_state:
@@ -10,7 +10,7 @@ if 'logged_in' not in st.session_state:
 
 def check_password():
     """ตรวจสอบรหัสผ่านที่ผู้ใช้ป้อน"""
-    if st.session_state.password == "12345":
+    if st.session_state.password == CORRECT_PASSWORD:
         st.session_state.logged_in = True
         st.experimental_rerun()  # รีเฟรชหน้าเว็บเพื่อแสดงเนื้อหาหลังล็อกอิน
     else:
