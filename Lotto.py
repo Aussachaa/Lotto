@@ -57,7 +57,7 @@ if df is not None:  # Check if data loading was successful
     with col6:
         end_date = st.date_input("End Date:", min_value=df['Date'].min(), max_value=df['Date'].max(), value=df['Date'].max())
 
-    st.markdown("---") # Add another horizontal line
+    #st.markdown("---") # Add another horizontal line
     # --- End of Filter Options ---
 
     # Filter data based on selected criteria
