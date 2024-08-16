@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 CORRECT_PASSWORD = "12345"
 
@@ -85,5 +86,17 @@ if st.session_state.logged_in:
 
         frequency_table.columns = ['Number', 'Frequency']
         st.dataframe(frequency_table.style.format({'Frequency': '{:,}'}), height=1000) # , use_container_width=True
+        
+        # สร้างกราฟ Plotly
+        fig = px.bar(frequency_table,
+                     x='Number', 
+                     y='Frequency', 
+                     title=f'Frequency of {selected_type} ({start_date.strftime("%d/%m/%Y")} - {end_date.strftime("%d/%m/%Y")})',
+                     labels={'Number': 'Number', 'Frequency': 'Frequency'},
+                     color='Frequency', 
+                     color_continuous_scale='Viridis') 
+        fig.update_layout(xaxis_tickangle=-45, height=600)
+        st.plotly_chart(fig, use_container_width=True) 
+
     else:
         st.warning("No data available. Please check the data source or try again later.")
