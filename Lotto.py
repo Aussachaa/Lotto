@@ -4,9 +4,9 @@ import pandas as pd
 CORRECT_PASSWORD = "12345"
 def check_password():
     """ตรวจสอบรหัสผ่านที่ผู้ใช้ป้อน"""
-    if st.session_state.password == CORRECT_PASSWORD:
+    if st.session_state.password == CORRECT_PASSWORD: # เปลี่ยนตรงนี้
         st.session_state.logged_in = True
-        # ไม่ต้องเรียก st.experimental_rerun() ที่นี่
+        st.experimental_rerun()  # รีเฟรชหน้าเว็บเพื่อแสดงเนื้อหาหลังล็อกอิน
     else:
         st.error("รหัสผ่านไม่ถูกต้อง")
 
