@@ -10,7 +10,7 @@ if 'logged_in' not in st.session_state:
 
 def check_password():
     """ตรวจสอบรหัสผ่านที่ผู้ใช้ป้อน"""
-    if st.session_state.password == 12345:
+    if st.session_state.password == "12345":
         st.session_state.logged_in = True
         st.experimental_rerun()  # รีเฟรชหน้าเว็บเพื่อแสดงเนื้อหาหลังล็อกอิน
     else:
