@@ -27,11 +27,12 @@ if df is not None:  # Check if data loading was successful
     st.subheader("Data Overview 👀")  # Added emoji
     st.dataframe(df.head(), use_container_width=True) 
 
+    # --- Filter Options ---
+    st.markdown("---") # Add a horizontal line for visual separation
+
     # Filter and Frequency Table section
     st.subheader("Lucky Number Frequency 📈")  # Added emoji
 
-    # --- Filter Options ---
-    st.markdown("---") # Add a horizontal line for visual separation
     col1, col2 = st.columns(2) 
 
     with col1:
