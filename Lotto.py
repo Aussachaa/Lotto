@@ -19,7 +19,7 @@ df = load_data()
 
 if df is not None:
     st.subheader("Data Overview 👀") 
-    st.dataframe(df.head(), use_container_width=True) 
+    st.dataframe(df.head(10), use_container_width=True) 
 
     st.markdown("---") 
     st.subheader("Lucky Number Frequency 📈") 
