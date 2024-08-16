@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # กำหนดรหัสผ่านที่ถูกต้อง (ควรเก็บไว้ในที่ปลอดภัยกว่านี้ในแอปพลิเคชันจริง)
-CORRECT_PASSWORD = "12345"
+CORRECT_PASSWORD = "ABC"
 
 # สร้าง Session State เพื่อเก็บสถานะการล็อกอิน
 if 'logged_in' not in st.session_state:
