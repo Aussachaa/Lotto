@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-CORRECT_PASSWORD = "12345"
+CORRECT_PASSWORD = 12345
 def check_password():
     """ตรวจสอบรหัสผ่านที่ผู้ใช้ป้อน"""
     if st.session_state.password == "CORRECT_PASSWORD":
