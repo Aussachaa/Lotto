@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 
+# ใส่ชื่อเจ้าของที่มุมขวาล่าง
+st.caption("© 2023 สร้างโดย Aussachaa")
+
 CORRECT_PASSWORD = "12345"
 
 # สร้าง Session State เพื่อเก็บสถานะการล็อกอิน
