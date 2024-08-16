@@ -63,6 +63,7 @@ if df is not None:
         frequency_table = filtered_df.value_counts().reset_index()
 
     frequency_table.columns = ['Number', 'Frequency']
+    pd.set_option("display.max_rows", None)  # Display all rows
     st.dataframe(frequency_table.style.format({'Frequency': '{:,}'}), use_container_width=True) 
 else:
     st.warning("No data available. Please check the data source or try again later.")
