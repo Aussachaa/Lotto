@@ -8,13 +8,19 @@ st.title("🔮 Lottery Data Explorer 🎱")
 def load_data():
     path_excel = "https://raw.githubusercontent.com/Aussachaa/Lotto/main/DB_Lottery.xlsx"
     try:
-        df = pd.read_excel(path_excel, sheet_name="DB", usecols="A:I", parse_dates=['Date'])
+        df = pd.read_excel(path_excel, sheet_name="DB", usecols="A:I", parse_dates=['Date'], dtype={'2 ตัวบน': str, 
+                   '2 ตัวล่าง': str, 
+                   '3 ตัวบน': str, 
+                   '3 ตัวหน้า_1': str, 
+                   '3 ตัวหน้า_2': str, 
+                   '3 ตัวล่าง_1': str, 
+                   '3 ตัวล่าง_2': str})
         df = df[['Date'] + [col for col in df.columns if col != 'Date']]
         return df
     except Exception as e:
         st.error(f"Error loading data: {e}. Please check the file path or your internet connection.")
         return None
-
+d
 df = load_data()
 
 if df is not None:
