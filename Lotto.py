@@ -91,7 +91,8 @@ if st.session_state.logged_in:
         fig = px.bar(frequency_table,
                      x='Number', 
                      y='Frequency', 
-                     title=f'Frequency of {selected_type} ({start_date.strftime("%d/%m/%Y")} - {end_date.strftime("%d/%m/%Y")})',
+                     #title=f'Frequency of {selected_type} ({start_date.strftime("%d/%m/%Y")} - {end_date.strftime("%d/%m/%Y")})',
+                     title=f'Frequency of {selected_type} ({start_year} - {end_year})',
                      labels={'Number': 'Number', 'Frequency': 'Frequency'},
                      color='Frequency', 
                      color_continuous_scale='Viridis') 
