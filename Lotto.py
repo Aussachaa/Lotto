@@ -22,7 +22,6 @@ if not st.session_state.logged_in:
 
 # ส่วนของเนื้อหาหลัก (จะแสดงเฉพาะเมื่อล็อกอินสำเร็จ)
 if st.session_state.logged_in:
-    # ... (เนื้อหาของแอปพลิเคชัน) ...
     st.set_page_config(page_title="Lottery Data Explorer", layout="wide")
     st.title("🔮 Lottery Data Explorer 🎱") 
 
@@ -44,16 +43,19 @@ if st.session_state.logged_in:
         st.dataframe(df.head(10), use_container_width=True) 
 
         st.markdown("---") 
-        st.subheader("Lucky Number Frequency 📈") 
+        st.subheader("Lottery Number Analysis 📈") 
+
+        st.info(f"Data Range: **{df['Date'].min().strftime('%d %B %Y')}** to **{df['Date'].max().strftime('%d %B %Y')}**") 
 
         col1, col2 = st.columns(2) 
         with col1:
             combination_choice = st.radio("Select Combination:", ["2-Digit Combination", "3-Digit Combination"])
         with col2:
-            if combination_choice == "2-Digit Combination":
-                selected_type = st.selectbox("Select Type:", ['All', '2 ตัวบน', '2 ตัวล่าง'], index=0) 
-            else:  
-                selected_type = st.selectbox("Select Type:", ['All', '3 ตัวบน', '3 ตัวหน้า_1', '3 ตัวหน้า_2', '3 ตัวล่าง_1', '3 ตัวล่าง_2'], index=0) 
+            type_options = {
+                "2-Digit Combination": ['All', '2 ตัวบน', '2 ตัวล่าง'],
+                "3-Digit Combination": ['All', '3 ตัวบน', '3 ตัวหน้า_1', '3 ตัวหน้า_2', '3 ตัวล่าง_1', '3 ตัวล่าง_2']
+            }
+            selected_type = st.selectbox("Select Type:", type_options[combination_choice], index=0) 
 
         col3, col4 = st.columns(2)
         with col3:
@@ -61,41 +63,39 @@ if st.session_state.logged_in:
         with col4:
             end_year = st.number_input("End Year:", min_value=df['Date'].dt.year.min(), max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.max())
 
-        col5, col6 = st.columns(2)
-        with col5:
-            start_date = st.date_input("Start Date:", min_value=df['Date'].min(), max_value=df['Date'].max(), value=df['Date'].min())
-        with col6:
-            end_date = st.date_input("End Date:", min_value=df['Date'].min(), max_value=df['Date'].max(), value=df['Date'].max())
+        # กรองข้อมูลตามปี
+        filtered_df = df[(df['Date'].dt.year >= start_year) & (df['Date'].dt.year <= end_year)]
 
         if selected_type == 'All':
             if combination_choice == "2-Digit Combination":
                 selected_columns = ['2 ตัวบน', '2 ตัวล่าง']
             else:
                 selected_columns = ['3 ตัวบน', '3 ตัวหน้า_1', '3 ตัวหน้า_2', '3 ตัวล่าง_1', '3 ตัวล่าง_2']
-            filtered_df = df[(df['Date'].dt.year >= start_year) & 
-                            (df['Date'].dt.year <= end_year) &
-                            (df['Date'] >= pd.to_datetime(start_date)) & 
-                            (df['Date'] <= pd.to_datetime(end_date))][selected_columns]
             frequency_table = pd.concat([filtered_df[col] for col in selected_columns]).value_counts().reset_index()
         else:
-            filtered_df = df[(df['Date'].dt.year >= start_year) & 
-                            (df['Date'].dt.year <= end_year) &
-                            (df['Date'] >= pd.to_datetime(start_date)) & 
-                            (df['Date'] <= pd.to_datetime(end_date))][selected_type]
-            frequency_table = filtered_df.value_counts().reset_index()
+            frequency_table = filtered_df[selected_type].value_counts().reset_index()
 
         frequency_table.columns = ['Number', 'Frequency']
-        st.dataframe(frequency_table.style.format({'Frequency': '{:,}'}), height=1000) # , use_container_width=True
-        
+
+        # คำนวณ Probability และ Cumulative probability
+        total_frequency = frequency_table['Frequency'].sum()
+        frequency_table['Probability'] = frequency_table['Frequency'] / total_frequency * 100
+        frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
+
+        # ปรับแต่งตารางด้วย st.dataframe
+        st.dataframe(frequency_table.style.format({
+            'Frequency': '{:,}', 
+            'Probability': '{:.2f}%',
+            'Cumulative probability': '{:.2f}%'
+        }).background_gradient(cmap='Blues', subset=['Frequency'], axis=0)
+        .highlight_max(subset=['Frequency'], axis=0, color='#F08080'), 
+        height=1000, use_container_width=True) 
+
         # สร้างกราฟ Plotly
-        fig = px.bar(frequency_table,
-                     x='Number', 
-                     y='Frequency', 
-                     #title=f'Frequency of {selected_type} ({start_date.strftime("%d/%m/%Y")} - {end_date.strftime("%d/%m/%Y")})',
+        fig = px.bar(frequency_table, x='Number', y='Frequency', 
                      title=f'Frequency of {selected_type} ({start_year} - {end_year})',
                      labels={'Number': 'Number', 'Frequency': 'Frequency'},
-                     color='Frequency', 
-                     color_continuous_scale='Viridis') 
+                     color='Frequency', color_continuous_scale='Viridis') 
         fig.update_layout(xaxis_tickangle=-45, height=600)
         st.plotly_chart(fig, use_container_width=True) 
 
