@@ -84,13 +84,19 @@ if st.session_state.logged_in:
         frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
 
         # ปรับแต่งตารางด้วย st.dataframe
-        st.dataframe(frequency_table.style.format({
-            'Frequency': '{:,}', 
-            'Probability': '{:.2f}%',
-            'Cumulative probability': '{:.2f}%'
-        }).background_gradient(cmap='Blues', subset=['Frequency'], axis=0)
-        .highlight_max(subset=['Frequency'], axis=0, color='#F08080'), 
-        height=1000, use_container_width=True) 
+        # Modified DataFrame Display (without background gradient)
+        st.dataframe(
+            frequency_table.style.format(
+                {
+                    "Frequency": "{:,}",
+                    "Probability": "{:.2f}%",
+                    "Cumulative probability": "{:.2f}%",
+                }
+            )
+            .highlight_max(subset=["Frequency"], axis=0, color="#F08080"),  # Keep highlighting
+            height=1000,
+            use_container_width=True,
+        )
 
         # สร้างกราฟ Plotly
         fig = px.bar(frequency_table, x='Number', y='Frequency', 
