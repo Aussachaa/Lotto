@@ -71,7 +71,8 @@ if st.session_state.logged_in:
                 selected_columns = ['2 ตัวบน', '2 ตัวล่าง']
             else:
                 selected_columns = ['3 ตัวบน', '3 ตัวหน้า_1', '3 ตัวหน้า_2', '3 ตัวล่าง_1', '3 ตัวล่าง_2']
-            frequency_table = pd.concat([filtered_df[col] for col in selected_columns]).value_counts().reset_index()
+            # แก้ไขส่วนนี้: ใช้ melt() เพื่อรวมข้อมูลจากหลายคอลัมน์
+            frequency_table = pd.melt(filtered_df[selected_columns], value_vars=selected_columns)['value'].value_counts().reset_index()
         else:
             frequency_table = filtered_df[selected_type].value_counts().reset_index()
 
