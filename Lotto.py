@@ -101,7 +101,7 @@ if st.session_state.logged_in:
             'Rank': '{:,}',
             'Probability': '{:.2f}%',
             'Cumulative probability': '{:.2f}%'
-        }).highlight_max(subset=['Frequency'], axis=0, color='#B2FEAB'), height=1000, use_container_width=True
+        }), height=1000, use_container_width=True
         ) 
 
         # สร้างกราฟ Plotly
