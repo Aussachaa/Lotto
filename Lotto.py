@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import openpyxl
-from datetime import datetime
 
 CORRECT_PASSWORD = "12345"
 
@@ -47,10 +46,7 @@ if st.session_state.logged_in:
         st.markdown("---") 
         st.subheader("Lottery Number Analysis 📈") 
 
-        # เพิ่มส่วนของการแสดงข้อมูลช่วงเวลา
-        min_date = df['Date'].min()
-        max_date = df['Date'].max()
-        st.info(f"Data Range: **{min_date.strftime('%d %B %Y')}** to **{max_date.strftime('%d %B %Y')}**") 
+        st.info(f"Data Range: **{df['Date'].min().strftime('%d %B %Y')}** to **{df['Date'].max().strftime('%d %B %Y')}**") 
 
         col1, col2 = st.columns(2) 
         with col1:
@@ -62,15 +58,14 @@ if st.session_state.logged_in:
             }
             selected_type = st.selectbox("Select Type:", type_options[combination_choice], index=0) 
 
-        # ปรับปรุงส่วนของการเลือกช่วงเวลา
         col3, col4 = st.columns(2)
         with col3:
-            start_date = st.date_input("Start Date:", min_value=min_date, max_value=max_date, value=min_date)
+            start_year = st.number_input("Start Year:", min_value=df['Date'].dt.year.min(), max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.min())
         with col4:
-            end_date = st.date_input("End Date:", min_value=min_date, max_value=max_date, value=max_date)
+            end_year = st.number_input("End Year:", min_value=df['Date'].dt.year.min(), max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.max())
 
-        # กรองข้อมูลตามช่วงเวลา
-        filtered_df = df[(df['Date'] >= pd.to_datetime(start_date)) & (df['Date'] <= pd.to_datetime(end_date))]
+        # กรองข้อมูลตามปี
+        filtered_df = df[(df['Date'].dt.year >= start_year) & (df['Date'].dt.year <= end_year)]
 
         if selected_type == 'All':
             if combination_choice == "2-Digit Combination":
@@ -88,7 +83,7 @@ if st.session_state.logged_in:
         frequency_table['Probability'] = frequency_table['Frequency'] / total_frequency * 100
         frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
 
-        # ปรับแต่งตารางด้วย st.dataframe
+        # แสดงผลตาราง
         st.dataframe(frequency_table.style.format({
             'Frequency': '{:,}', 
             'Probability': '{:.2f}%',
@@ -98,28 +93,23 @@ if st.session_state.logged_in:
 
         # สร้างกราฟ Plotly
         fig = px.bar(frequency_table, x='Number', y='Frequency', 
-                     title=f'Frequency of {selected_type} ({start_date.strftime("%d %B %Y")} - {end_date.strftime("%d %B %Y")})',
+                     title=f'Frequency of {selected_type} ({start_year} - {end_year})',
                      labels={'Number': 'Number', 'Frequency': 'Frequency'},
                      color='Frequency', color_continuous_scale='Viridis') 
         fig.update_layout(xaxis_tickangle=-45, height=600)
         st.plotly_chart(fig, use_container_width=True) 
 
-        # เพิ่มมุมมองการวิเคราะห์ที่น่าสนใจ
+        # ส่วนของการค้นหาเลขเด็ด
         st.markdown("---")
-        st.subheader("Insights 💡")
+        st.subheader("Lucky Number Checker ✨")
+        lucky_number = st.text_input("Enter your lucky number (e.g., 123, 45, 6789):")
 
-        # 1. เลขที่ออกบ่อยที่สุด (2 อันดับแรก)
-        top_2_numbers = frequency_table.nlargest(2, 'Frequency')
-        st.write(f"**Top 2 most frequent {selected_type}:**")
-        st.dataframe(top_2_numbers)
-
-        # 2. เลขที่ออกน้อยที่สุด (2 อันดับสุดท้าย)
-        bottom_2_numbers = frequency_table.nsmallest(2, 'Frequency')
-        st.write(f"**Bottom 2 least frequent {selected_type}:**")
-        st.dataframe(bottom_2_numbers)
-
-        # 3. คำนวณช่วงเวลาที่เลขออกติดต่อกันนานที่สุด
-        # ... (เพิ่ม logic สำหรับการวิเคราะห์เพิ่มเติม)
-
+        if lucky_number:
+            try:
+                lucky_number = str(int(lucky_number))  # แปลงเป็น string เพื่อค้นหาในตาราง
+                cumulative_probability = frequency_table[frequency_table['Number'] == lucky_number]['Cumulative probability'].values[0]
+                st.info(f"The cumulative probability of your lucky number ({lucky_number}) is: **{cumulative_probability:.2f}%**")
+            except:
+                st.warning("Invalid input. Please enter a valid number.")
     else:
         st.warning("No data available. Please check the data source or try again later.")
