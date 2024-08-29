@@ -96,25 +96,13 @@ if st.session_state.logged_in:
         frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
 
         # ปรับแต่งตารางด้วย st.dataframe
-        def color_by_frequency(val):
-            """ไล่สีตามค่า Frequency"""
-            if isinstance(val, str):  # ถ้าเป็น string ไม่ต้องไล่สี
-                return ''
-            norm = (val - frequency_table['Frequency'].min()) / (frequency_table['Frequency'].max() - frequency_table['Frequency'].min())
-            return [f'background-color: hsl({120 * norm}, 80%, 80%);' for _ in range(len(frequency_table))]
-
-        st.dataframe(
-            frequency_table.style
-            .format({
-                'Frequency': '{:,}', 
-                'Rank': '{:,}',
-                'Probability': '{:.2f}%',
-                'Cumulative probability': '{:.2f}%'
-            })
-            .apply(color_by_frequency, subset=['Number']),  # นำ function color_by_frequency มาใช้
-            height=1000, 
-            use_container_width=True
-        )  
+        st.dataframe(frequency_table.style.format({
+            'Frequency': '{:,}', 
+            'Rank': '{:,}',
+            'Probability': '{:.2f}%',
+            'Cumulative probability': '{:.2f}%'
+        }), height=1000, use_container_width=True
+        ) 
 
         # สร้างกราฟ Plotly
         fig = px.bar(frequency_table, x='Number', y='Frequency', 
