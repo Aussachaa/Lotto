@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import openpyxl
-import matplotlib.pyplot as plt
 
 # กำหนดรหัสผ่าน
 CORRECT_PASSWORD = "12345"
@@ -105,27 +104,13 @@ if st.session_state.logged_in:
         if selected_numbers:
             frequency_table = frequency_table[frequency_table['Number'].isin(selected_numbers)]
 
-        # สร้างฟังก์ชันสำหรับไล่สีคอลัมน์ 'Number' ตามค่า 'Frequency'
-        def color_cells(s):
-            # ใช้ colormap 'coolwarm' (คุณสามารถเปลี่ยนเป็น colormap อื่นๆ ได้)
-            cmap = px.colors.sequential.coolwarm
-            norm = plt.Normalize(vmin=s.min(), vmax=s.max())
-            colors = [f'background-color: {c}' for c in plt.cm.coolwarm(norm(s.values))]
-            return colors
-
-        # แสดงตารางผลลัพธ์พร้อมไล่สีคอลัมน์ 'Number'
-        st.dataframe(
-            frequency_table.style
-            .format({
-                'Frequency': '{:,}', 
-                'Rank': '{:,}',
-                'Probability': '{:.2f}%',
-                'Cumulative probability': '{:.2f}%'
-            })
-            .apply(color_cells, subset=['Number']), # ใช้ฟังก์ชัน color_cells กับคอลัมน์ 'Number'
-            height=1000, 
-            use_container_width=True
-        ) 
+        # แสดงตารางผลลัพธ์
+        st.dataframe(frequency_table.style.format({
+            'Frequency': '{:,}', 
+            'Rank': '{:,}',
+            'Probability': '{:.2f}%',
+            'Cumulative probability': '{:.2f}%'
+        }), height=1000, use_container_width=True) 
 
         # สร้างกราฟแสดงผล
         fig = px.bar(frequency_table, x='Number', y='Frequency', 
