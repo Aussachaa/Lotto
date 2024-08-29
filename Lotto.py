@@ -3,12 +3,14 @@ import pandas as pd
 import plotly.express as px
 import openpyxl
 
+# กำหนดรหัสผ่าน
 CORRECT_PASSWORD = "12345"
 
-# สร้าง Session State เพื่อเก็บสถานะการล็อกอิน
+# สร้าง Session State สำหรับเก็บสถานะการล็อกอิน
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
+# ฟังก์ชันตรวจสอบรหัสผ่าน
 def check_password():
     """ตรวจสอบรหัสผ่านที่ผู้ใช้ป้อน"""
     if st.session_state.password == CORRECT_PASSWORD:
@@ -26,6 +28,7 @@ if st.session_state.logged_in:
     st.set_page_config(page_title="Lottery Data Explorer", layout="wide")
     st.title("🔮 Lottery Data Explorer 🎱") 
 
+    # ฟังก์ชันโหลดข้อมูล (มีแคชเพื่อเพิ่มประสิทธิภาพ)
     @st.cache_data 
     def load_data():
         path_excel = "https://raw.githubusercontent.com/Aussachaa/Lotto/main/DB_Lottery.xlsx"
@@ -37,8 +40,10 @@ if st.session_state.logged_in:
             st.error(f"Error loading data: {e}. Please check the file path or your internet connection.")
             return None
 
+    # โหลดข้อมูล
     df = load_data()
 
+    # แสดงข้อมูลเมื่อโหลดสำเร็จ
     if df is not None:
         st.subheader("Data Overview 👀") 
         st.dataframe(df.head(10), use_container_width=True) 
@@ -46,8 +51,10 @@ if st.session_state.logged_in:
         st.markdown("---") 
         st.subheader("Lottery Number Analysis 📈") 
 
+        # แสดงช่วงข้อมูล
         st.info(f"Data Range: **{df['Date'].min().strftime('%d %B %Y')}** to **{df['Date'].max().strftime('%d %B %Y')}**") 
 
+        # ส่วนของการเลือกเงื่อนไข
         col1, col2 = st.columns(2) 
         with col1:
             combination_choice = st.radio("Select Combination:", ["2-Digit Combination", "3-Digit Combination"])
@@ -60,51 +67,42 @@ if st.session_state.logged_in:
 
         col3, col4 = st.columns(2)
         with col3:
-            start_year = st.number_input("Start Year:", min_value=df['Date'].dt.year.min(), max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.min())
+            start_year = st.number_input("Start Year:", min_value=df['Date'].dt.year.min(), 
+                                        max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.min())
         with col4:
-            end_year = st.number_input("End Year:", min_value=df['Date'].dt.year.min(), max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.max())
+            end_year = st.number_input("End Year:", min_value=df['Date'].dt.year.min(), 
+                                      max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.max())
 
         # กรองข้อมูลตามปี
         filtered_df = df[(df['Date'].dt.year >= start_year) & (df['Date'].dt.year <= end_year)]
 
+        # เลือกคอลัมน์สำหรับวิเคราะห์
         if selected_type == 'All':
-            if combination_choice == "2-Digit Combination":
-                selected_columns = ['2 ตัวบน', '2 ตัวล่าง']
-            else:
-                selected_columns = ['3 ตัวบน', '3 ตัวหน้า_1', '3 ตัวหน้า_2', '3 ตัวล่าง_1', '3 ตัวล่าง_2']
+            selected_columns = ['2 ตัวบน', '2 ตัวล่าง'] if combination_choice == "2-Digit Combination" else \
+                               ['3 ตัวบน', '3 ตัวหน้า_1', '3 ตัวหน้า_2', '3 ตัวล่าง_1', '3 ตัวล่าง_2']
             frequency_table = pd.concat([filtered_df[col] for col in selected_columns]).value_counts().reset_index()
         else:
             frequency_table = filtered_df[selected_type].value_counts().reset_index()
 
+        # จัดรูปแบบตาราง
         frequency_table.columns = ['Number', 'Frequency']
-
-        # คำนวณ Rank
         frequency_table['Rank'] = frequency_table['Frequency'].rank(ascending=False, method='min').astype(int)
-
-        # คำนวณ Probability และ Cumulative probability **ย้ายมาไว้บรรทัดนี้**
-        total_frequency = frequency_table['Frequency'].sum()
-        frequency_table['Probability'] = frequency_table['Frequency'] / total_frequency * 100
-        frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
-
-        # จัดเรียงคอลัมน์ใหม่
-        frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]
-
 
         # คำนวณ Probability และ Cumulative probability
         total_frequency = frequency_table['Frequency'].sum()
         frequency_table['Probability'] = frequency_table['Frequency'] / total_frequency * 100
         frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
+        frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]
 
-        # ปรับแต่งตารางด้วย st.dataframe
+        # แสดงตารางผลลัพธ์
         st.dataframe(frequency_table.style.format({
             'Frequency': '{:,}', 
             'Rank': '{:,}',
             'Probability': '{:.2f}%',
             'Cumulative probability': '{:.2f}%'
-        }), height=1000, use_container_width=True
-        ) 
+        }), height=1000, use_container_width=True) 
 
-        # สร้างกราฟ Plotly
+        # สร้างกราฟแสดงผล
         fig = px.bar(frequency_table, x='Number', y='Frequency', 
                      title=f'Frequency of {selected_type} ({start_year} - {end_year})',
                      labels={'Number': 'Number', 'Frequency': 'Frequency'},
