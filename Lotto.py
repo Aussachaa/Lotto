@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import openpyxl
+from datetime import datetime
 
 CORRECT_PASSWORD = "12345"
 
@@ -46,7 +47,10 @@ if st.session_state.logged_in:
         st.markdown("---") 
         st.subheader("Lottery Number Analysis 📈") 
 
-        st.info(f"Data Range: **{df['Date'].min().strftime('%d %B %Y')}** to **{df['Date'].max().strftime('%d %B %Y')}**") 
+        # เพิ่มส่วนของการแสดงข้อมูลช่วงเวลา
+        min_date = df['Date'].min()
+        max_date = df['Date'].max()
+        st.info(f"Data Range: **{min_date.strftime('%d %B %Y')}** to **{max_date.strftime('%d %B %Y')}**") 
 
         col1, col2 = st.columns(2) 
         with col1:
@@ -58,14 +62,15 @@ if st.session_state.logged_in:
             }
             selected_type = st.selectbox("Select Type:", type_options[combination_choice], index=0) 
 
+        # ปรับปรุงส่วนของการเลือกช่วงเวลา
         col3, col4 = st.columns(2)
         with col3:
-            start_year = st.number_input("Start Year:", min_value=df['Date'].dt.year.min(), max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.min())
+            start_date = st.date_input("Start Date:", min_value=min_date, max_value=max_date, value=min_date)
         with col4:
-            end_year = st.number_input("End Year:", min_value=df['Date'].dt.year.min(), max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.max())
+            end_date = st.date_input("End Date:", min_value=min_date, max_value=max_date, value=max_date)
 
-        # กรองข้อมูลตามปี
-        filtered_df = df[(df['Date'].dt.year >= start_year) & (df['Date'].dt.year <= end_year)]
+        # กรองข้อมูลตามช่วงเวลา
+        filtered_df = df[(df['Date'] >= pd.to_datetime(start_date)) & (df['Date'] <= pd.to_datetime(end_date))]
 
         if selected_type == 'All':
             if combination_choice == "2-Digit Combination":
@@ -93,11 +98,28 @@ if st.session_state.logged_in:
 
         # สร้างกราฟ Plotly
         fig = px.bar(frequency_table, x='Number', y='Frequency', 
-                     title=f'Frequency of {selected_type} ({start_year} - {end_year})',
+                     title=f'Frequency of {selected_type} ({start_date.strftime("%d %B %Y")} - {end_date.strftime("%d %B %Y")})',
                      labels={'Number': 'Number', 'Frequency': 'Frequency'},
                      color='Frequency', color_continuous_scale='Viridis') 
         fig.update_layout(xaxis_tickangle=-45, height=600)
         st.plotly_chart(fig, use_container_width=True) 
+
+        # เพิ่มมุมมองการวิเคราะห์ที่น่าสนใจ
+        st.markdown("---")
+        st.subheader("Insights 💡")
+
+        # 1. เลขที่ออกบ่อยที่สุด (Top 5)
+        top_5_numbers = frequency_table.nlargest(5, 'Frequency')
+        st.write(f"**Top 5 most frequent {selected_type}:**")
+        st.dataframe(top_5_numbers)
+
+        # 2. เลขที่ออกน้อยที่สุด (Bottom 5)
+        bottom_5_numbers = frequency_table.nsmallest(5, 'Frequency')
+        st.write(f"**Bottom 5 least frequent {selected_type}:**")
+        st.dataframe(bottom_5_numbers)
+
+        # 3. คำนวณช่วงเวลาที่เลขออกติดต่อกันนานที่สุด
+        # ... (เพิ่ม logic สำหรับการวิเคราะห์เพิ่มเติม)
 
     else:
         st.warning("No data available. Please check the data source or try again later.")
