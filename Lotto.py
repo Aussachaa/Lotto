@@ -108,15 +108,15 @@ if st.session_state.logged_in:
         st.markdown("---")
         st.subheader("Insights 💡")
 
-        # 1. เลขที่ออกบ่อยที่สุด (Top 5)
-        top_5_numbers = frequency_table.nlargest(5, 'Frequency')
-        st.write(f"**Top 5 most frequent {selected_type}:**")
-        st.dataframe(top_5_numbers)
+        # 1. เลขที่ออกบ่อยที่สุด (2 อันดับแรก)
+        top_2_numbers = frequency_table.nlargest(2, 'Frequency')
+        st.write(f"**Top 2 most frequent {selected_type}:**")
+        st.dataframe(top_2_numbers)
 
-        # 2. เลขที่ออกน้อยที่สุด (Bottom 5)
-        bottom_5_numbers = frequency_table.nsmallest(5, 'Frequency')
-        st.write(f"**Bottom 5 least frequent {selected_type}:**")
-        st.dataframe(bottom_5_numbers)
+        # 2. เลขที่ออกน้อยที่สุด (2 อันดับสุดท้าย)
+        bottom_2_numbers = frequency_table.nsmallest(2, 'Frequency')
+        st.write(f"**Bottom 2 least frequent {selected_type}:**")
+        st.dataframe(bottom_2_numbers)
 
         # 3. คำนวณช่วงเวลาที่เลขออกติดต่อกันนานที่สุด
         # ... (เพิ่ม logic สำหรับการวิเคราะห์เพิ่มเติม)
