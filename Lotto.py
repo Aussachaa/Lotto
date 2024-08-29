@@ -78,6 +78,12 @@ if st.session_state.logged_in:
 
         frequency_table.columns = ['Number', 'Frequency']
 
+        # คำนวณ Rank
+        frequency_table['Rank'] = frequency_table['Frequency'].rank(ascending=False, method='min').astype(int)
+
+        # จัดเรียงคอลัมน์ใหม่
+        frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]
+
         # คำนวณ Probability และ Cumulative probability
         total_frequency = frequency_table['Frequency'].sum()
         frequency_table['Probability'] = frequency_table['Frequency'] / total_frequency * 100
@@ -86,6 +92,7 @@ if st.session_state.logged_in:
         # ปรับแต่งตารางด้วย st.dataframe
         st.dataframe(frequency_table.style.format({
             'Frequency': '{:,}', 
+            'Rank': '{:,}',
             'Probability': '{:.2f}%',
             'Cumulative probability': '{:.2f}%'
         }).highlight_max(subset=['Frequency'], axis=0, color='#B2FEAB'), height=1000, use_container_width=True
