@@ -106,7 +106,7 @@ if st.session_state.logged_in:
 
         if lucky_number:
             try:
-                lucky_number = str(int(lucky_number)) 
+                lucky_number = int(lucky_number)  # แปลงเป็น string เพื่อค้นหาในตาราง
                 cumulative_probability = frequency_table[frequency_table['Number'] == lucky_number]['Cumulative probability'].values[0]
                 st.info(f"The cumulative probability of your lucky number ({lucky_number}) is: **{cumulative_probability:.2f}%**")
             except:
