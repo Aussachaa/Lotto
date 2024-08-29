@@ -83,7 +83,7 @@ if st.session_state.logged_in:
         frequency_table['Probability'] = frequency_table['Frequency'] / total_frequency * 100
         frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
 
-        # แสดงผลตาราง
+        # ปรับแต่งตารางด้วย st.dataframe
         st.dataframe(frequency_table.style.format({
             'Frequency': '{:,}', 
             'Probability': '{:.2f}%',
@@ -99,17 +99,5 @@ if st.session_state.logged_in:
         fig.update_layout(xaxis_tickangle=-45, height=600)
         st.plotly_chart(fig, use_container_width=True) 
 
-        # ส่วนของการค้นหาเลขเด็ด
-        st.markdown("---")
-        st.subheader("Lucky Number Checker ✨")
-        lucky_number = st.text_input("Enter your lucky number (e.g., 123, 45, 6789):")
-
-        if lucky_number:
-            try:
-                lucky_number = int(lucky_number)  # แปลงเป็น string เพื่อค้นหาในตาราง
-                cumulative_probability = frequency_table[frequency_table['Number'] == lucky_number]['Cumulative probability'].values[0]
-                st.info(f"The cumulative probability of your lucky number ({lucky_number}) is: **{cumulative_probability:.2f}%**")
-            except:
-                st.warning("Invalid input. Please enter a valid number.")
     else:
         st.warning("No data available. Please check the data source or try again later.")
