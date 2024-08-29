@@ -94,6 +94,16 @@ if st.session_state.logged_in:
         frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
         frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]
 
+        selected_numbers = st.multiselect(
+            "Select Specific Numbers (Optional):", 
+            options=frequency_table['Number'].unique(),
+            default=None
+        )
+
+        # กรองข้อมูลตาม Number ที่เลือก (ถ้ามี)
+        if selected_numbers:
+            frequency_table = frequency_table[frequency_table['Number'].isin(selected_numbers)]
+
         # แสดงตารางผลลัพธ์
         st.dataframe(frequency_table.style.format({
             'Frequency': '{:,}', 
