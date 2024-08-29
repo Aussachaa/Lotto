@@ -86,7 +86,7 @@ if st.session_state.logged_in:
 
         # จัดรูปแบบตาราง
         frequency_table.columns = ['Number', 'Frequency']
-        frequency_table['Rank'] = frequency_table['Frequency'].rank(ascending=False, method='min').astype(int)
+        frequency_table['Rank'] = frequency_table['Frequency'].rank(ascending=False, method='dense').astype(int)
 
         # คำนวณ Probability และ Cumulative probability
         total_frequency = frequency_table['Frequency'].sum()
