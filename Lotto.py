@@ -114,7 +114,7 @@ if st.session_state.logged_in:
             'Rank': '{:,}',
             'Probability': '{:.2f}%',
             'Cumulative probability': '{:.2f}%'
-        }), height=1000, use_container_width=True) 
+        }), height=700, use_container_width=True) 
 
         # สร้างกราฟแสดงผล
         fig = px.bar(frequency_table, 
