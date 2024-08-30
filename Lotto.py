@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import openpyxl
 
 # กำหนดรหัสผ่าน
 CORRECT_PASSWORD = "12345"
@@ -67,11 +66,15 @@ if st.session_state.logged_in:
 
         col3, col4 = st.columns(2)
         with col3:
-            start_year = st.number_input("Start Year:", min_value=df['Date'].dt.year.min(), 
-                                        max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.min())
+            start_year = st.number_input("Start Year:", 
+                                        min_value=df['Date'].dt.year.min(), 
+                                        max_value=df['Date'].dt.year.max(), 
+                                        value=df['Date'].dt.year.min())
         with col4:
-            end_year = st.number_input("End Year:", min_value=df['Date'].dt.year.min(), 
-                                      max_value=df['Date'].dt.year.max(), value=df['Date'].dt.year.max())
+            end_year = st.number_input("End Year:", 
+                                      min_value=df['Date'].dt.year.min(), 
+                                      max_value=df['Date'].dt.year.max(), 
+                                      value=df['Date'].dt.year.max())
 
         # กรองข้อมูลตามปี
         filtered_df = df[(df['Date'].dt.year >= start_year) & (df['Date'].dt.year <= end_year)]
@@ -114,10 +117,13 @@ if st.session_state.logged_in:
         }), height=1000, use_container_width=True) 
 
         # สร้างกราฟแสดงผล
-        fig = px.bar(frequency_table, x='Number', y='Frequency', 
+        fig = px.bar(frequency_table, 
+                     x='Number', 
+                     y='Frequency', 
                      title=f'Frequency of {selected_type} ({start_year} - {end_year})',
                      labels={'Number': 'Number', 'Frequency': 'Frequency'},
-                     color='Frequency', color_continuous_scale='Viridis') 
+                     color='Frequency', 
+                     color_continuous_scale='Viridis') 
         fig.update_layout(xaxis_tickangle=-45, height=600)
         st.plotly_chart(fig, use_container_width=True) 
 
