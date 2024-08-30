@@ -46,7 +46,7 @@ if st.session_state.logged_in:
     # แสดงข้อมูลเมื่อโหลดสำเร็จ
     if df is not None:
         st.subheader("Data Overview 👀") 
-        st.dataframe(df.head(10), use_container_width=True) 
+        st.dataframe(df.head(5), use_container_width=True) 
 
         st.markdown("---") 
         st.subheader("Lottery Number Analysis 📈") 
@@ -101,7 +101,7 @@ if st.session_state.logged_in:
         # กรองข้อมูลตาม Number ที่เลือก (ถ้ามี)
         if selected_numbers:
             frequency_table = frequency_table[frequency_table['Number'].isin(selected_numbers)]
-            
+
         frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
         frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]           
 
