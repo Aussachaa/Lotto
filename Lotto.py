@@ -69,7 +69,7 @@ if st.session_state.logged_in:
             start_year = st.number_input("Start Year:", 
                                         min_value=df['Date'].dt.year.min(), 
                                         max_value=df['Date'].dt.year.max(), 
-                                        value=df['Date'].dt.year.min())
+                                        value=2017) # เปลี่ยนค่า Default เป็น 2017
         with col4:
             end_year = st.number_input("End Year:", 
                                       min_value=df['Date'].dt.year.min(), 
