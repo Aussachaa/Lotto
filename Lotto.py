@@ -44,7 +44,7 @@ if st.session_state.logged_in:
 
     # แสดงข้อมูลเมื่อโหลดสำเร็จ
     if df is not None:
-        st.subheader("Check Out the Last 5 Draws! 👀") 
+        st.subheader("Lottery Results 👀") 
         st.dataframe(df.head(5), use_container_width=True) 
 
         st.markdown("---") 
