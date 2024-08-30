@@ -25,7 +25,7 @@ if not st.session_state.logged_in:
 # ส่วนของเนื้อหาหลัก (จะแสดงเฉพาะเมื่อล็อกอินสำเร็จ)
 if st.session_state.logged_in:
     st.set_page_config(page_title="Lottery Data Explorer", layout="wide")
-    st.title("Lottery Data Explorer 🎱") 
+    st.title("🔮 Lottery Data Explorer 🎱") 
 
     # ฟังก์ชันโหลดข้อมูล (มีแคชเพื่อเพิ่มประสิทธิภาพ)
     @st.cache_data 
