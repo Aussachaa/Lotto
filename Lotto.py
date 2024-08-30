@@ -91,8 +91,6 @@ if st.session_state.logged_in:
         # คำนวณ Probability และ Cumulative probability
         total_frequency = frequency_table['Frequency'].sum()
         frequency_table['Probability'] = frequency_table['Frequency'] / total_frequency * 100
-        frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
-        frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]
 
         selected_numbers = st.multiselect(
             "Select Specific Numbers (Optional):", 
@@ -103,6 +101,9 @@ if st.session_state.logged_in:
         # กรองข้อมูลตาม Number ที่เลือก (ถ้ามี)
         if selected_numbers:
             frequency_table = frequency_table[frequency_table['Number'].isin(selected_numbers)]
+            
+        frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
+        frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]           
 
         # แสดงตารางผลลัพธ์
         st.dataframe(frequency_table.style.format({
