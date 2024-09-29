@@ -105,15 +105,15 @@ if st.session_state.logged_in:
         if selected_numbers:
             frequency_table = frequency_table[frequency_table['Number'].isin(selected_numbers)]
 
-        frequency_table['Cumulative probability'] = frequency_table['Probability'].cumsum()
-        frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'Cumulative probability']]           
+        frequency_table['CDF'] = frequency_table['Probability'].cumsum()
+        frequency_table = frequency_table[['Number', 'Frequency', 'Rank', 'Probability', 'CDF']]           
 
         # แสดงตารางผลลัพธ์
         st.dataframe(frequency_table.style.format({
             'Frequency': '{:,}', 
             'Rank': '{:,}',
             'Probability': '{:.2f}%',
-            'Cumulative probability': '{:.2f}%'
+            'CDF': '{:.2f}%'
         }), height=600, use_container_width=True) 
 
         # สร้างกราฟแสดงผล
